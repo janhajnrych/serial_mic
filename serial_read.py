@@ -3,7 +3,7 @@ from PyQt5.QtCore import QMutex, QObject, pyqtSignal
 import numpy as np
 
 class Reader(QObject):
-    read_complete = pyqtSignal(int, int)
+    finished = pyqtSignal()
     mutex = QMutex()
     
     def __init__(self, buffer_size): 
@@ -14,6 +14,7 @@ class Reader(QObject):
         self.signal_data = np.zeros(self.__buffer_size).ravel()
         self.time_data = np.zeros(self.__buffer_size).ravel()
         self.first_timestamp = None
+        self.should_run = False
 
     def try_open(self):
         try:
@@ -24,7 +25,9 @@ class Reader(QObject):
         return device
     
     def run(self):
-        while True:
+        self.should_run = True
+        print("start reading")
+        while self.should_run:
             timestamp, data = self.__get_next_serial_data_point()
             if data is None or timestamp is None:
                 continue
@@ -36,8 +39,9 @@ class Reader(QObject):
             self.time_data = np.roll(self.time_data, 1)
             self.time_data[0] = (timestamp - self.first_timestamp)/1000.0
             self.mutex.unlock()
-            
-            
+        print("finished reading")
+        self.finished.emit()
+
     def get_signals(self, n_elem):
         return self.signal_data[:n_elem]
 
@@ -62,5 +66,6 @@ class Reader(QObject):
             return None, None
         except serialutil.SerialException as serial_error:
             print(str(serial_error))
+            self.should_run = False
             return None, None
         return timestamp, value
