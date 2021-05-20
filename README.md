@@ -7,4 +7,8 @@ then create virtualenv on your pc
 then install reader dependencies: pip instal -r requirements.txt
 run serial_read.py
 
+## installation
+activate virtualenv
+then run user_interface.py
+
 
