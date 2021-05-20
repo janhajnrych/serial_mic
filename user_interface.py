@@ -12,6 +12,7 @@ from matplotlib.figure import Figure
 from scipy.fft import fft, fftfreq
 from serial_read import Reader
 
+
 class TimeSeriesCanvas(FigureCanvasQTAgg):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -136,14 +137,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.worker = Reader(self.data_size)
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.run)
-#        self.worker.finished.connect(self.thread.quit)
-#        self.worker.finished.connect(self.worker.deleteLater)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.thread.start()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     w = MainWindow()
     w.show()
     app.exec_()
-#
+    
