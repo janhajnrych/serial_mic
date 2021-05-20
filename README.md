@@ -11,4 +11,7 @@ run serial_read.py
 activate virtualenv
 then run user_interface.py
 
+## test run
+connect test board as in the photo board.jpg and plug USB cable to your PC
+
 
